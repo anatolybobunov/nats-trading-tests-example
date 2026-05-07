@@ -13,7 +13,7 @@ async def test_valid_buy_order_creates_order(nats_client, db_client, message_col
         symbol="AAPL",
         side=OrderSide.BUY,
         quantity=10,
-        price=Decimal("150.25"),
+        price=Decimal("150"),
     )
 
     await place_order(nats_client, prepared_order)

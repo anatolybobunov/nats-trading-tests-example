@@ -4,7 +4,7 @@ from decimal import Decimal
 from typing import Any, Literal
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_serializer
 
 from src.enums import OrderSide, OrderStatus
 
@@ -26,6 +26,10 @@ class OrderCreate(BaseModel):
     side: OrderSide
     quantity: int = Field(gt=0)
     price: Decimal = Field(gt=0)
+
+    @field_serializer("price", when_used="json")
+    def serialize_price(self, value: Decimal) -> float:
+        return float(value)  # TODO: В ТЗ написано numbers? Уточнить точнее тип и разрядность
 
 
 class OrderConfirmed(BaseModel):

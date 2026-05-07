@@ -94,6 +94,18 @@ class MessageCollector:
         for subject in list(self._queues.keys()):
             await self.drain(subject)
 
+    async def drain_all(self) -> dict[str, list[NatsMessage]]:
+        drained_by_subject: dict[str, list[NatsMessage]] = {}
+        for subject in list(self._queues.keys()):
+            drained_by_subject[subject] = await self.drain(subject)
+
+        logger.debug(
+            "drained all messages",
+            subjects=list(drained_by_subject.keys()),
+            total_count=sum(len(messages) for messages in drained_by_subject.values()),
+        )
+        return drained_by_subject
+
     async def stop(self) -> None:
         logger.debug("stopping message collector")
         for subscription in self._subscriptions.values():

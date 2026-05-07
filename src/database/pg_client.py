@@ -51,6 +51,30 @@ class PostgresClient:
             return None
         return PositionRow.model_validate(dict(record))
 
+    async def fetch_all_orders(self) -> list[OrderRow]:
+        logger.debug("fetching all orders")
+        query = """
+        SELECT order_id, symbol, side, quantity, price, status, created_at
+        FROM orders
+        ORDER BY created_at ASC
+        """
+        records = await self._pool.fetch(query)
+        orders = [OrderRow.model_validate(dict(record)) for record in records]
+        logger.debug("fetched all orders", count=len(orders))
+        return orders
+
+    async def fetch_all_positions(self) -> list[PositionRow]:
+        logger.debug("fetching all positions")
+        query = """
+        SELECT symbol, quantity, updated_at
+        FROM positions
+        ORDER BY symbol ASC
+        """
+        records = await self._pool.fetch(query)
+        positions = [PositionRow.model_validate(dict(record)) for record in records]
+        logger.debug("fetched all positions", count=len(positions))
+        return positions
+
     async def wait_for_order_status(
         self,
         order_id: UUID,

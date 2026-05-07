@@ -53,7 +53,6 @@ async def db_client() -> AsyncIterator[PostgresClient]:
 
 @pytest_asyncio.fixture
 async def message_collector(nats_client: NatsClient) -> AsyncIterator[MessageCollector]:
-    log.info("starting message collector")
     collector = MessageCollector(nats_client)
     await collector.start(
         [

@@ -48,6 +48,7 @@ class NatsClient:
             subject=subject,
             headers=headers,
             body=body,
+            wire_payload=data.decode("utf-8"),
         )
         await self._connection.publish(subject, payload=data, headers=headers)
 
