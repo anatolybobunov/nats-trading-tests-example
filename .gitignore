@@ -216,3 +216,15 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Git worktree
+.worktrees/
+
+# Macos
+.DS_Store
+
+# OpenCode
+.opencode/
+
+# Claude Code
+.claude/
