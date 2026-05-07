@@ -1,4 +1,5 @@
 import pytest
+from decimal import Decimal
 
 from helpers.check import check_order_in_db, check_position_updated
 from helpers.orders import place_order, prepare_order
@@ -7,27 +8,18 @@ from src.enums import OrderSide, OrderStatus
 
 
 @pytest.mark.asyncio
-async def test_valid_buy_order_creates_order_emits_events_and_updates_position(
-    nats_client,
-    db_client,
-    message_collector,
-) -> None:
+async def test_valid_buy_order_creates_order(nats_client, db_client, message_collector):
     prepared_order = prepare_order(
         symbol="AAPL",
         side=OrderSide.BUY,
         quantity=10,
+        price=Decimal("150.25"),
     )
 
     await place_order(nats_client, prepared_order)
 
-    confirmed = await wait_for_order_confirmed(
-        message_collector,
-        order_id=prepared_order.order_id,
-    )
-    executed = await wait_for_trade_executed(
-        message_collector,
-        order_id=prepared_order.order_id,
-    )
+    confirmed = await wait_for_order_confirmed(message_collector, order_id=prepared_order.order_id)
+    executed = await wait_for_trade_executed(message_collector, order_id=prepared_order.order_id)
     order_row = await check_order_in_db(
         db_client,
         order_id=prepared_order.order_id,

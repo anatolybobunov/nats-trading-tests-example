@@ -1,11 +1,14 @@
 import asyncio
 from collections.abc import Awaitable, Callable
 
+import structlog
 from nats.aio.msg import Msg
 from nats.aio.subscription import Subscription
 
 from src.messaging.nats_client import NatsClient
 from src.messaging.models import NatsMessage
+
+logger = structlog.get_logger(__name__)
 
 
 class MessageCollector:
@@ -16,8 +19,10 @@ class MessageCollector:
         self._pending: dict[str, list[NatsMessage]] = {}
 
     async def start(self, subjects: list[str]) -> None:
+        logger.debug("starting message collector", subjects=subjects)
         for subject in subjects:
             if subject in self._subscriptions:
+                logger.debug("already subscribed", subject=subject)
                 continue
 
             queue: asyncio.Queue[NatsMessage] = asyncio.Queue()
@@ -26,6 +31,7 @@ class MessageCollector:
 
             subscription = await self._client.subscribe(subject, cb=self._make_handler(subject))
             self._subscriptions[subject] = subscription
+            logger.debug("subscription started", subject=subject)
 
     async def wait_for(
         self,
@@ -53,10 +59,16 @@ class MessageCollector:
         while True:
             remaining = deadline - loop.time()
             if remaining <= 0:
+                logger.debug("timed out waiting for message", subject=subject, timeout=timeout)
                 raise TimeoutError(f"timed out waiting for subject '{subject}'")
 
             message = await asyncio.wait_for(queue.get(), timeout=remaining)
             if predicate is None or predicate(message):
+                logger.debug(
+                    "received matching message",
+                    subject=subject,
+                    message_subject=message.subject,
+                )
                 return message
             pending.append(message)
 
@@ -74,6 +86,8 @@ class MessageCollector:
                 drained.append(queue.get_nowait())
             except asyncio.QueueEmpty:
                 break
+
+        logger.debug("drained messages", subject=subject, count=len(drained))
         return drained
 
     async def reset(self) -> None:
@@ -81,12 +95,14 @@ class MessageCollector:
             await self.drain(subject)
 
     async def stop(self) -> None:
+        logger.debug("stopping message collector")
         for subscription in self._subscriptions.values():
             await subscription.unsubscribe()
 
         self._subscriptions.clear()
         self._queues.clear()
         self._pending.clear()
+        logger.debug("message collector stopped")
 
     def _make_handler(self, subject: str) -> Callable[[Msg], Awaitable[None]]:
         async def on_message(msg: Msg) -> None:
@@ -96,6 +112,12 @@ class MessageCollector:
                 data=msg.data,
                 headers=headers,
                 reply=msg.reply,
+            )
+            logger.debug(
+                "message received",
+                subject=msg.subject,
+                data_len=len(msg.data),
+                has_headers=headers is not None,
             )
             await self._queues[subject].put(message)
 

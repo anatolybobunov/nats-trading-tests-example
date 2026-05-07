@@ -1,3 +1,4 @@
+import structlog
 from typing import TypeVar
 from uuid import UUID
 
@@ -6,6 +7,8 @@ from pydantic import BaseModel
 from src.messaging.collector import MessageCollector
 from src.messaging.models import OrderConfirmed, TradeExecuted
 from src.messaging.subjects import ORDERS_CONFIRMED_SUBJECT, TRADES_EXECUTED_SUBJECT
+
+logger = structlog.get_logger(__name__)
 
 ModelT = TypeVar("ModelT", bound=BaseModel)
 
@@ -18,11 +21,13 @@ async def _wait_for_typed_message(
     model_type: type[ModelT],
     timeout: float = 5.0,
 ) -> ModelT:
+    logger.info("waiting for typed message", subject=subject, order_id=str(order_id), model=model_type.__name__)
     message = await collector.wait_for(
         subject,
         timeout=timeout,
         predicate=lambda item: item.json_payload().get("order_id") == str(order_id),
     )
+    logger.info("typed message received", subject=subject, order_id=str(order_id), model=model_type.__name__)
     payload = message.json_payload()
     return model_type.model_validate(payload)
 
