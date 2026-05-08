@@ -19,16 +19,21 @@ The test suite covers:
 
 ## Project structure
 
-- `src/pg/` — PostgreSQL models and client helpers.
-- `src/nts/` — NATS client, collector, message schemas, and subject names.
-- `helpers/` — reusable test helpers for payloads, retries, waits, and side-effect checks.   # TODO: расписать подробнее некоторые папки
-- `tests/` — E2E tests and contract tests for the trading flow.
-- `logger/` — structlog logging configuration.
+- `src/pg/` — PostgreSQL models and client helpers
+- `src/nts/` — NATS client, collector, message schemas, and subject names
+- `helpers/` — reusable test helpers for payloads, retries, waits, and side-effect checks
+- `tests/` — E2E tests and contract tests for the trading flow
+- `logger/` — structlog logging configuration
+- `utils/` — auxiliary functions not related to business logic
 - `docker-compose.yml` — local environment with NATS, PostgreSQL, Order Service, and Trade Service.
-- `init.sql` — database bootstrap script used by PostgreSQL.
-- `pyproject.toml` / `uv.lock` — Python project metadata and locked dependencies.
+- `init.sql` — database bootstrap script used by PostgreSQL
+- `pyproject.toml` / `uv.lock` — Python project metadata and locked dependencies
 
 ## Environment setup
+
+### Requirements
+
+You must have Docker installed locally.
 
 ### 1. Install `uv`
 
@@ -87,14 +92,22 @@ docker compose down -v
 ```
 
 ## Actual tests status
-1. `test_order_flow_accepts_high_precision_price` - проверка на максимальное точность. В задании не указано какую точность должно иметь поле Price. В init.sql и согласно логу который отдает сервис я вижу что это NUMERIC(12,4). Но так как согласно заданию для меня сервисы - black box, то я оставил тест падающим потому что он требует получения уточнений у владельца сервисов.
-2. `test_order_rejected_when_symbol_value_invalid` - отсутствует валидация на пустую строку или строку из пробелов у поля symbol
-
+1. `test_order_flow_accepts_high_precision_price` - The task does not specify what precision the Price field should have. In init.sql and in the service logs, I can see that it uses NUMERIC(12,4). This test needs clarification from the service owners. 
+2. `test_order_rejected_when_symbol_value_invalid` - Bug: there is no validation for the symbol field. 
+3. `test_order_rejected_when_order_id_is_invalid_uuid ` - Bug: we should get an order rejection, but the service lets an invalid order_id pass through, and we reach a database error. 
 
 
 ## Approach
 
+- Tech stack: pytest, pytest-asyncio, nats-py, pydantic, asyncpg — these are popular and widely used tools.  
+- The layered architecture was chosen from the beginning because it separates different logic into layers, makes the project easier to change, and helps with future extension.  
+- Environment setup and linters: uv, ruff, ty, and pre-commit — a popular and common combination.
 
 ## Decisions
+There were no specific requirements for the libraries in the task, so I chose the most commonly used ones. This should make it easier for another tester to start working with the repository and code.
+
+I set up linters at the very beginning, before writing the code, so the code would follow one consistent style from the start.
+
+I chose layered architecture because I have used this approach for the last few years, and it fits this task well. The only downside may be a little over-engineering at the beginning.
 
 

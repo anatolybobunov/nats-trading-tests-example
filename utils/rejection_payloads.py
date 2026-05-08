@@ -1,15 +1,6 @@
-"""Shared helpers for order rejection tests.
-
-Provides base payload factory and mutator functions for parametrized
-negative test cases.
-"""
-
 from collections.abc import Callable
 from typing import Any
 from uuid import uuid4
-
-
-# TODO: вынести этот код из helpers
 
 
 def base_order_payload() -> dict[str, Any]:
