@@ -6,14 +6,14 @@ from collections.abc import AsyncIterator
 import pytest
 import pytest_asyncio
 
-from src.messaging.nats_client import NatsClient
-from src.messaging.collector import MessageCollector
-from src.messaging.subjects import (
+from src.nts.nats_client import NatsClient
+from src.nts.collector import MessageCollector
+from src.nts.subjects import (
     ORDERS_CONFIRMED_SUBJECT,
     ORDERS_REJECTED_SUBJECT,
     TRADES_EXECUTED_SUBJECT,
 )
-from src.database.pg_client import PostgresClient
+from src.pg.pg_client import PostgresClient
 
 log = structlog.get_logger(__name__)
 
@@ -71,8 +71,8 @@ async def message_collector(nats_client: NatsClient) -> AsyncIterator[MessageCol
 
 @pytest_asyncio.fixture(autouse=True)
 async def _cleanup_db(db_client: PostgresClient) -> AsyncIterator[None]:
-    log.info("cleaning up database before test")
+    log.info("cleaning up pg before test")
     yield
-    log.info("cleaning up database after test")
+    log.info("cleaning up pg after test")
     await db_client.execute("DELETE FROM orders")
     await db_client.execute("DELETE FROM positions")

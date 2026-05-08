@@ -5,8 +5,8 @@ import structlog
 from nats.aio.msg import Msg
 from nats.aio.subscription import Subscription
 
-from src.messaging.nats_client import NatsClient
-from src.messaging.models import NatsMessage
+from src.nts.nats_client import NatsClient
+from src.nts.models import NatsMessage
 
 logger = structlog.get_logger(__name__)
 

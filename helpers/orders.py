@@ -4,9 +4,9 @@ from decimal import Decimal
 from uuid import UUID, uuid4
 
 from src.enums import OrderSide
-from src.messaging.models import OrderCreate
-from src.messaging.nats_client import NatsClient
-from src.messaging.subjects import ORDERS_CREATE_SUBJECT
+from src.nts.models import OrderCreate
+from src.nts.nats_client import NatsClient
+from src.nts.subjects import ORDERS_CREATE_SUBJECT
 
 logger = structlog.get_logger(__name__)
 

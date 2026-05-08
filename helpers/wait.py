@@ -4,9 +4,9 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from src.messaging.collector import MessageCollector
-from src.messaging.models import OrderConfirmed, TradeExecuted
-from src.messaging.subjects import ORDERS_CONFIRMED_SUBJECT, TRADES_EXECUTED_SUBJECT
+from src.nts.collector import MessageCollector
+from src.nts.models import OrderConfirmed, TradeExecuted
+from src.nts.subjects import ORDERS_CONFIRMED_SUBJECT, TRADES_EXECUTED_SUBJECT
 
 logger = structlog.get_logger(__name__)
 

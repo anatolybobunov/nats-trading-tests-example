@@ -4,10 +4,14 @@ import asyncio
 
 import structlog
 
-from src.database.models import PositionRow
-from src.database.pg_client import PostgresClient
-from src.messaging.collector import MessageCollector
-from src.messaging.subjects import TRADES_EXECUTED_SUBJECT
+from src.pg.models import PositionRow
+from src.pg.pg_client import PostgresClient
+from src.nts.collector import MessageCollector
+from src.nts.subjects import TRADES_EXECUTED_SUBJECT
+
+
+# TODO: вынести этот код из helpers
+
 
 logger = structlog.get_logger(__name__)
 

@@ -1,7 +1,7 @@
 """
 Temporary debug helpers for investigating automated test behavior.
 This file contains utility code that is used only for debugging and troubleshooting test runs.
-It helps inspect NATS messages and database state while tests are running.
+It helps inspect NATS messages and pg state while tests are running.
 The code here is not part of the main application logic and may be removed or changed later.
 """
 
@@ -9,10 +9,10 @@ from dataclasses import dataclass
 
 import structlog
 
-from src.database.models import OrderRow, PositionRow
-from src.database.pg_client import PostgresClient
-from src.messaging.collector import MessageCollector
-from src.messaging.models import NatsMessage
+from src.pg.models import OrderRow, PositionRow
+from src.pg.pg_client import PostgresClient
+from src.nts.collector import MessageCollector
+from src.nts.models import NatsMessage
 
 logger = structlog.get_logger(__name__)
 

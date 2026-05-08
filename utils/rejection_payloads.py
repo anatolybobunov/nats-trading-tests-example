@@ -9,6 +9,9 @@ from typing import Any
 from uuid import uuid4
 
 
+# TODO: вынести этот код из helpers
+
+
 def base_order_payload() -> dict[str, Any]:
     """Return a valid order payload that can be mutated for negative tests."""
     return {

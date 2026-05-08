@@ -121,7 +121,7 @@ async def test_order_flow_accepts_min_price(
     db_client,
     message_collector,
 ):
-    """Minimal allowed price (0.01) should pass the full flow."""
+    """Minimal allowed price (0.0001) should pass the full flow."""
     await _assert_full_order_flow(
         db_client,
         nats_client,
@@ -129,7 +129,7 @@ async def test_order_flow_accepts_min_price(
         side=OrderSide.BUY,
         symbol="AAPL",
         quantity=10,
-        price=Decimal("0.01"),
+        price=Decimal("0.0001"),
         expected_position_delta=10,
     )
 

@@ -3,10 +3,10 @@ from uuid import UUID
 import pytest
 from pydantic import ValidationError
 
-from helpers.rejection_payloads import base_order_payload
+from utils.rejection_payloads import base_order_payload
 from src.enums import OrderStatus
-from src.messaging.models import OrderConfirmed, OrderCreate, TradeExecuted
-from src.messaging.subjects import (
+from src.nts.models import OrderConfirmed, OrderCreate, TradeExecuted
+from src.nts.subjects import (
     ORDERS_CONFIRMED_SUBJECT,
     ORDERS_CREATE_SUBJECT,
     ORDERS_REJECTED_SUBJECT,

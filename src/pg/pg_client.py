@@ -4,7 +4,7 @@ from uuid import UUID
 import asyncpg
 import structlog
 
-from src.database.models import OrderRow, PositionRow
+from src.pg.models import OrderRow, PositionRow
 from src.enums import OrderStatus
 
 logger = structlog.get_logger(__name__)
@@ -22,7 +22,7 @@ class PostgresClient:
         return cls(pool)
 
     async def close(self) -> None:
-        logger.debug("closing database pool")
+        logger.debug("closing pg pool")
         await self._pool.close()
 
     async def fetch_order(self, order_id: UUID) -> OrderRow | None:
