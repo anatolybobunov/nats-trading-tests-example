@@ -81,8 +81,7 @@ uv run pytest
 ### 3. Run a specific test file
 
 ```bash
-uv run pytest tests/test_order_flow.py
-uv run pytest tests/test_order_contracts.py
+uv run pytest tests/e2e/test_order_flow.py 
 ```
 
 ### 4. Stop the environment
