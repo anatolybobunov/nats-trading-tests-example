@@ -4,6 +4,8 @@ Minimal end-to-end and contract testing example for an event-driven trading syst
 
 This repository was created for a take-home assignment focused on automated testing of a black-box trading system. The tests verify the full order flow, side effects in PostgreSQL, and message contracts between the Order Service and the Trade Service.
 
+> I wrote the architecture and the main code myself. AI was used for code review, partial test code generation, and translating texts and comments into English. Overall, it was about 50/50.
+
 ## Project overview
 
 The system has two services that communicate through NATS:
